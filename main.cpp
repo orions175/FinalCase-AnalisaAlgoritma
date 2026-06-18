@@ -67,5 +67,6 @@ int main()
         cout << i + 1 << ". " << hasil[i] << endl;
     }
 
+    system("pause");
     return 0;
 }
