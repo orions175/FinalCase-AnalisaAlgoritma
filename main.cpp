@@ -1,16 +1,25 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <stack>
+#include <limits>
+
+// Wajib Windows soalnya cuma buat untuk windows
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 using namespace std;
 
+void printColoredParentheses(const string &s);
+
 /**
  * Fungsi rekursif utama untuk algoritma Backtracking.
- * @param hasil     Vektor untuk menyimpan semua kombinasi valid (dikirim by reference).
- * @param saat_ini  String yang sedang dirakit secara bertahap (dikirim by reference).
- * @param buka      Jumlah kurung buka '(' yang sudah dipasang saat ini.
- * @param tutup     Jumlah kurung tutup ')' yang sudah dipasang saat ini.
- * @param N         Jumlah maksimal pasang kurung.
+ * @param hasil Vektor untuk menyimpan semua kombinasi valid.
+ * @param saat_ini String yang sedang dirakit.
+ * @param symbolBuka Jumlah kurung buka '(' yang sudah dipasang.
+ * @param symbolTutup Jumlah kurung tutup ')' yang sudah dipasang.
+ * @param jumlahPasang Jumlah maksimal pasang kurung.
  */
 void generateParenthesis(vector<string> &hasil, string &saat_ini, int symbolBuka, int symbolTutup, int jumlahPasang)
 {
@@ -48,6 +57,64 @@ void generateParenthesis(vector<string> &hasil, string &saat_ini, int symbolBuka
     }
 }
 
+/**
+ * @brief Mencetak string tanda kurung dengan pasangan berwarna.
+ * Menggunakan stack untuk mencocokkan pasangan kurung dan memberikan warna yang sama.
+ * @param s String kombinasi tanda kurung yang valid.
+ */
+void printColoredParentheses(const string &s)
+{
+#ifdef _WIN32
+    // Mengaktifkan mode virtual terminal untuk ANSI escape codes di Windows 10+
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    DWORD dwMode = 0;
+    GetConsoleMode(hOut, &dwMode);
+    dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+    SetConsoleMode(hOut, dwMode);
+#endif
+
+    // Daftar warna ANSI untuk digunakan secara berurutan
+    const vector<string> colors = {
+        "\033[91m", // Merah
+        "\033[92m", // Hijau
+        "\033[93m", // Kuning
+        "\033[94m", // Biru
+        "\033[95m", // Magenta
+        "\033[96m"  // Cyan
+    };
+    const string resetColor = "\033[0m";
+
+    stack<int> colorStack;
+    int colorIndex = 0;
+
+    for (char c : s)
+    {
+        if (c == '(')
+        {
+            // Pilih warna, cetak, dan simpan indeks warna ke stack
+            int currentColor = colorIndex % colors.size();
+            cout << colors[currentColor] << c << resetColor;
+            colorStack.push(currentColor);
+            colorIndex++;
+        }
+        else if (c == ')')
+        {
+            if (!colorStack.empty())
+            {
+                // Ambil warna dari pasangan kurung bukanya
+                int matchingColor = colorStack.top();
+                colorStack.pop();
+                cout << colors[matchingColor] << c << resetColor;
+            }
+            else
+            {
+                // Seharusnya tidak terjadi pada string yang valid
+                cout << c;
+            }
+        }
+    }
+}
+
 int main()
 {
     int jumlahPasang;
@@ -62,11 +129,19 @@ int main()
     generateParenthesis(hasil, saat_ini, 0, 0, jumlahPasang);
 
     cout << "\nHasil kombinasi untuk N = " << jumlahPasang << " (" << hasil.size() << " kombinasi):" << endl;
-    for (int i = 0; i < hasil.size(); i++)
+    for (size_t i = 0; i < hasil.size(); i++)
     {
         cout << i + 1 << ". " << hasil[i] << endl;
+
+        // Kalau Mau Print Warna
+
+        // cout << i + 1 << ". ";
+        // printColoredParentheses(hasil[i]);
+        // cout << endl;
     }
 
-    system("pause");
+    cout << "\nTekan Enter untuk keluar...";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Membersihkan buffer input
+    cin.get();                                           // Menunggu pengguna menekan Enter
     return 0;
 }
