@@ -4,11 +4,6 @@
 #include <stack>
 #include <limits>
 
-// Wajib Windows soalnya cuma buat untuk windows
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
 using namespace std;
 
 void printColoredParentheses(const string &s);
@@ -64,16 +59,9 @@ void generateParenthesis(vector<string> &hasil, string &saat_ini, int symbolBuka
  */
 void printColoredParentheses(const string &s)
 {
-#ifdef _WIN32
-    // Mengaktifkan mode virtual terminal untuk ANSI escape codes di Windows 10+
-    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-    DWORD dwMode = 0;
-    GetConsoleMode(hOut, &dwMode);
-    dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-    SetConsoleMode(hOut, dwMode);
-#endif
 
-    // Daftar warna ANSI untuk digunakan secara berurutan
+    // Daftar warna ANSI untuk digunakan secara berurutan Kalau Windows Seperti ini
+    // Kalau yang lain saya juga kurang tau
     const vector<string> colors = {
         "\033[91m", // Merah
         "\033[92m", // Hijau
@@ -131,13 +119,13 @@ int main()
     cout << "\nHasil kombinasi untuk N = " << jumlahPasang << " (" << hasil.size() << " kombinasi):" << endl;
     for (size_t i = 0; i < hasil.size(); i++)
     {
-        cout << i + 1 << ". " << hasil[i] << endl;
+        // cout << i + 1 << ". " << hasil[i] << endl;
 
         // Kalau Mau Print Warna
 
-        // cout << i + 1 << ". ";
-        // printColoredParentheses(hasil[i]);
-        // cout << endl;
+        cout << i + 1 << ". ";
+        printColoredParentheses(hasil[i]);
+        cout << endl;
     }
 
     cout << "\nTekan Enter untuk keluar...";
