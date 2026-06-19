@@ -12,29 +12,29 @@ using namespace std;
  * @param tutup     Jumlah kurung tutup ')' yang sudah dipasang saat ini.
  * @param N         Jumlah maksimal pasang kurung.
  */
-void generateParenthesis(vector<string> &hasil, string &saat_ini, int buka, int tutup, int N)
+void generateParenthesis(vector<string> &hasil, string &saat_ini, int buka, int tutup, int jumlahPasang)
 {
-    // 1. KONDISI BERHENTI (Base Case)
+    // KONDISI BERHENTI (Base Case)
     // Jika panjang string sudah mencapai 2 * N, kombinasi selesai dan valid.
-    if (saat_ini.length() == 2 * N)
+    if (saat_ini.length() == 2 * jumlahPasang)
     {
         hasil.push_back(saat_ini);
         return;
     }
 
-    // 2. ATURAN KURUNG BUKA
+    // ATURAN KURUNG BUKA
     // Kita bisa terus menambah kurung buka selama jumlahnya belum mencapai N.
-    if (buka < N)
+    if (buka < jumlahPasang)
     {
         saat_ini.push_back('('); // Lakukan aksi: pasang kurung buka
 
         // Eksplorasi jalur ini lebih dalam
-        generateParenthesis(hasil, saat_ini, buka + 1, tutup, N);
+        generateParenthesis(hasil, saat_ini, buka + 1, tutup, jumlahPasang);
 
         saat_ini.pop_back(); // BACKTRACKING: cabut kembali kurung buka untuk coba kombinasi lain
     }
 
-    // 3. ATURAN KURUNG TUTUP
+    // ATURAN KURUNG TUTUP
     // Kita HANYA boleh menambah kurung tutup jika jumlahnya lebih sedikit dari kurung buka.
     // Ini mencegah string invalid seperti "())" di tengah jalan.
     if (tutup < buka)
@@ -42,7 +42,7 @@ void generateParenthesis(vector<string> &hasil, string &saat_ini, int buka, int 
         saat_ini.push_back(')'); // Lakukan aksi: pasang kurung tutup
 
         // Eksplorasi jalur ini lebih dalam
-        generateParenthesis(hasil, saat_ini, buka, tutup + 1, N);
+        generateParenthesis(hasil, saat_ini, buka, tutup + 1, jumlahPasang);
 
         saat_ini.pop_back(); // BACKTRACKING: cabut kembali kurung tutup untuk coba kombinasi lain
     }
@@ -51,7 +51,7 @@ void generateParenthesis(vector<string> &hasil, string &saat_ini, int buka, int 
 int main()
 {
     int N;
-    cout << "=== Pengecekan Tanda Kurung '()' Kurung Valid ===" << endl;
+    cout << "<<= Pengecekan Tanda Kurung '()' Kurung Valid =>>" << endl;
     cout << "Masukkan jumlah pasang kurung (N): ";
     cin >> N;
 
