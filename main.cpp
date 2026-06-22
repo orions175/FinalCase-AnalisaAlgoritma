@@ -16,7 +16,7 @@ void printColoredParentheses(const string &s);
  * @param symbolTutup Jumlah kurung tutup ')' yang sudah dipasang.
  * @param jumlahPasang Jumlah maksimal pasang kurung.
  */
-void generateParenthesis(vector<string> &hasil, string &saat_ini, int symbolBuka, int symbolTutup, int jumlahPasang)
+void generateParenthesis(vector<string> &hasil, string &saat_ini, int symbolBuka, int symbolTutup, int jumlahPasang, char symbol[2])
 {
     // KONDISI BERHENTI (Base Case)
     // Jika panjang string sudah mencapai 2 * N, kombinasi selesai dan valid.
@@ -30,12 +30,13 @@ void generateParenthesis(vector<string> &hasil, string &saat_ini, int symbolBuka
     // Kita bisa terus menambah kurung buka selama jumlahnya belum mencapai N.
     if (symbolBuka < jumlahPasang)
     {
-        saat_ini.push_back('('); // Lakukan aksi: pasang kurung buka
+        saat_ini.push_back(symbol[0]); // Lakukan aksi: pasang kurung buka
 
         // Eksplorasi jalur ini lebih dalam
-        generateParenthesis(hasil, saat_ini, symbolBuka + 1, symbolTutup, jumlahPasang);
+        generateParenthesis(hasil, saat_ini, symbolBuka + 1, symbolTutup, jumlahPasang, symbol);
 
-        saat_ini.pop_back(); // BACKTRACKING: cabut kembali kurung buka untuk coba kombinasi lain
+        // BACKTRACKING -  cabut kembali kurung buka untuk coba kombinasi lain
+        saat_ini.pop_back();
     }
 
     // ATURAN KURUNG TUTUP
@@ -43,12 +44,12 @@ void generateParenthesis(vector<string> &hasil, string &saat_ini, int symbolBuka
     // Ini mencegah string invalid seperti "())" di tengah jalan.
     if (symbolTutup < symbolBuka)
     {
-        saat_ini.push_back(')'); // Lakukan aksi: pasang kurung tutup
+        // Lakukan aksi: pasang kurung tutup
+        saat_ini.push_back(symbol[1]);
 
-        // Eksplorasi jalur ini lebih dalam
-        generateParenthesis(hasil, saat_ini, symbolBuka, symbolTutup + 1, jumlahPasang);
+        generateParenthesis(hasil, saat_ini, symbolBuka, symbolTutup + 1, jumlahPasang, symbol);
 
-        saat_ini.pop_back(); // BACKTRACKING: cabut kembali kurung tutup untuk coba kombinasi lain
+        saat_ini.pop_back();
     }
 }
 
@@ -57,7 +58,7 @@ void generateParenthesis(vector<string> &hasil, string &saat_ini, int symbolBuka
  * Menggunakan stack untuk mencocokkan pasangan kurung dan memberikan warna yang sama.
  * @param s String kombinasi tanda kurung yang valid.
  */
-void printColoredParentheses(const string &s)
+void printColoredParentheses(const string &s, char symbol[2])
 {
 
     // Daftar warna ANSI untuk digunakan secara berurutan Kalau Windows Seperti ini
@@ -77,7 +78,7 @@ void printColoredParentheses(const string &s)
 
     for (char c : s)
     {
-        if (c == '(')
+        if (c == symbol[0])
         {
             // Pilih warna, cetak, dan simpan indeks warna ke stack
             int currentColor = colorIndex % colors.size();
@@ -85,7 +86,7 @@ void printColoredParentheses(const string &s)
             colorStack.push(currentColor);
             colorIndex++;
         }
-        else if (c == ')')
+        else if (c == symbol[1])
         {
             if (!colorStack.empty())
             {
@@ -112,9 +113,10 @@ int main()
 
     vector<string> hasil;
     string saat_ini = "";
+    char symbol[2] = {'{', '}'};
 
     // Panggil fungsi rekursif dengan nilai awal buka=0 dan tutup=0
-    generateParenthesis(hasil, saat_ini, 0, 0, jumlahPasang);
+    generateParenthesis(hasil, saat_ini, 0, 0, jumlahPasang, symbol);
 
     cout << "\nHasil kombinasi untuk N = " << jumlahPasang << " (" << hasil.size() << " kombinasi):" << endl;
     for (size_t i = 0; i < hasil.size(); i++)
@@ -124,7 +126,7 @@ int main()
         // Kalau Mau Print Warna
 
         cout << i + 1 << ". ";
-        printColoredParentheses(hasil[i]);
+        printColoredParentheses(hasil[i], symbol);
         cout << endl;
     }
 
